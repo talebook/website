@@ -49,7 +49,7 @@ export default defineConfig({
 
         footer: {
           message: '基于 Calibre + Vue 构建',
-          copyright: 'Copyright © 2016-2026 Talebook',
+          copyright: 'Copyright © 2016-2026 Talebook | <a href="https://beian.miit.gov.cn">粤ICP备14073162号</a>',
         },
 
         search: {
@@ -113,7 +113,7 @@ export default defineConfig({
 
         footer: {
           message: 'Built with Calibre + Vue',
-          copyright: 'Copyright © 2016-2026 Talebook',
+          copyright: 'Copyright © 2016-2026 Talebook | <a href="https://beian.miit.gov.cn">粤ICP备14073162号</a>',
         },
       },
     },
