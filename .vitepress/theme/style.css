@@ -1,0 +1,30 @@
+:root {
+  --vp-sidebar-bg-color: var(--vp-c-bg);
+}
+
+.VPNavBarTitle .title {
+  font-size: 20px;
+}
+
+.VPSidebarItem.level-1 {
+  margin-bottom: 4px;
+}
+
+.VPSidebarItem.level-1 .text {
+  padding-left: 12px;
+}
+
+.VPSidebarItem .item:hover > .link {
+  background-color: var(--vp-c-default-soft);
+  border-radius: 6px;
+  transition: background-color 0.15s;
+}
+
+.VPSidebarItem.is-active .link {
+  background-color: var(--vp-c-brand-soft);
+  border-radius: 6px;
+}
+
+.VPSidebarItem.is-active .item:hover > .link {
+  background-color: var(--vp-c-brand-soft);
+}
