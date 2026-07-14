@@ -1,0 +1,27 @@
+{
+  "name": "talebook-landing",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "concurrently -n web,docs \"vite --port 5173\" \"npm --prefix docs run dev\"",
+    "dev:web": "vite --port 5173",
+    "dev:docs": "npm --prefix docs run dev",
+    "build": "vite build",
+    "build:docs": "npm --prefix docs run build",
+    "build:all": "npm run build && npm run build:docs",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "concurrently": "^9.1.2",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.17",
+    "vite": "^6.0.7"
+  }
+}
