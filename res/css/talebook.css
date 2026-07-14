@@ -1,0 +1,146 @@
+.container {
+  max-width: 960px;
+}
+
+/*
+ * Custom translucent site header
+ */
+
+.site-header {
+  background-color: rgba(0, 0, 0, .85);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+}
+.site-header a {
+  color: #999;
+  transition: ease-in-out color .15s;
+}
+.site-header a:hover {
+  color: #fff;
+  text-decoration: none;
+}
+
+/*
+ * Dummy devices (replace them with your own or something else entirely!)
+ */
+
+.product-device {
+  position: absolute;
+  right: 5%;
+  bottom: -30%;
+  width: 300px;
+  height: 540px;
+  background-color: #333;
+  border-radius: 21px;
+  -webkit-transform: rotate(20deg);
+  transform: rotate(20deg);
+}
+
+.product-device::before {
+  position: absolute;
+  top: 10%;
+  right: 10px;
+  bottom: 8%;
+  left: 10px;
+  content: "";
+  background-color: rgba(255, 255, 255, .1);
+  background-image: url("../mobile.png");
+  border-radius: 5px;
+}
+
+.product-img2 {
+  top: -5%;
+  right: auto;
+  bottom: 0;
+  left: 0;
+  background-color: #e5e5e5;
+}
+.product-img2::before {
+  background-size: cover;
+  background-image: url("../img/mobile.png");
+}
+.product-img1::before {
+  background-size: cover;
+  background-image: url("../img/book.png");
+}
+
+
+/*
+ * Extra utilities
+ */
+
+.border-top { border-top: 1px solid #e5e5e5; }
+.border-bottom { border-bottom: 1px solid #e5e5e5; }
+
+.box-shadow { box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05); }
+
+.flex-equal > * {
+  -ms-flex: 1;
+  -webkit-box-flex: 1;
+  flex: 1;
+}
+@media (min-width: 768px) {
+  .flex-md-equal > * {
+    -ms-flex: 1;
+    -webkit-box-flex: 1;
+    flex: 1;
+  }
+}
+
+.overflow-hidden { overflow: hidden; }
+
+.bs-docs-masthead .bs-docs-booticon {
+    margin: 0 auto 30px;
+}
+
+.bs-docs-booticon-outline {
+    background-color: transparent;
+    border: 1px solid #cdbfe3;
+}
+.bs-docs-booticon-lg {
+    width: 144px;
+    height: 144px;
+    font-size: 108px;
+    line-height: 140px;
+}
+.bs-docs-booticon {
+    display: block;
+    font-weight: 500;
+    color: #fff;
+    text-align: center;
+    cursor: default;
+    background-color: #563d7c;
+    border-radius: 15%;
+}
+
+.features p.lead {
+    min-height: 3em;
+}
+
+.feature-img-big {
+    width: 95%;
+    border-radius: 21px 21px 0 0;
+}
+
+@media(min-width: 990px) {
+.feature-img-big {
+    width: 70%;
+    border-radius: 21px 21px 0 0;
+}
+}
+
+.feature-img {
+    width: 80%;
+    height: 500px;
+    border-radius: 21px 21px 0 0;
+}
+
+.half-rule {
+    width: 100px;
+    margin: 40px auto;
+}
+
+.text-over-img {
+    background-color: rgba(248, 249, 250, 0.8);
+}
+
