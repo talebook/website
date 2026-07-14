@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from 'react'
 const WORDS = ['简洁强大的', '开箱即用的', '美观易用的', '功能丰富的']
 
 const NAV = [
-  { label: '文档', href: '/docs/' },
+  { label: '文档', href: 'docs/' },
   { label: 'Demo', href: 'https://demo.talebook.org' },
 ]
 
@@ -109,8 +109,8 @@ function Nav() {
       scrolled ? 'bg-white/80 backdrop-blur border-b border-gray-100 text-gray-900 shadow-sm' : 'bg-transparent text-gray-900'
     }`}>
       <div className="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
-        <a href="/" className="flex items-center gap-2 text-xl font-bold">
-          <img src="/favicon.ico" className="w-8 h-8" alt="" />
+        <a href="." className="flex items-center gap-2 text-xl font-bold">
+          <img src="favicon.ico" className="w-8 h-8" alt="" />
           <span>Talebook</span>
         </a>
 
@@ -187,7 +187,7 @@ export default function App() {
           </p>
 
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <a href="/docs/"
+            <a href="docs/"
               className="inline-flex items-center justify-center px-8 py-3.5 rounded-full bg-brand-500 text-white font-semibold hover:bg-brand-600 hover:scale-105 transition-all">
               立即开始
               <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -202,7 +202,7 @@ export default function App() {
           </div>
 
           <div className="mt-16">
-            <img src="/screenshot.png" alt="Talebook 界面预览"
+            <img src="screenshot.png" alt="Talebook 界面预览"
               className="rounded-xl shadow-2xl border border-gray-200 mx-auto" />
           </div>
         </div>
@@ -259,7 +259,7 @@ export default function App() {
           <h2 className="text-5xl md:text-6xl lg:text-8xl font-bold text-gray-900 mb-16 tracking-tight leading-tight">
             即刻部署你的<br /><span className="text-brand-500">私人图书馆</span>
           </h2>
-          <a href="/docs/"
+          <a href="docs/"
             className="group relative inline-flex items-center gap-3 bg-brand-500 text-white px-12 py-6 rounded-full font-bold text-xl hover:bg-brand-600 hover:scale-105 transition-all shadow-xl shadow-brand-500/20 overflow-hidden">
             <span className="relative z-10">立即开始</span>
             <svg className="w-6 h-6 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -275,7 +275,7 @@ export default function App() {
           <div>
             <h4 className="font-semibold mb-3">资源</h4>
             <div className="space-y-2 text-sm text-gray-500">
-              <a href="/docs/" className="block hover:text-gray-900">文档</a>
+              <a href="docs/" className="block hover:text-gray-900">文档</a>
               <a href="https://demo.talebook.org" className="block hover:text-gray-900">Demo</a>
             </div>
           </div>
