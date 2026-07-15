@@ -12,6 +12,7 @@ export default defineConfig({
       themeConfig: {
         logo: '/favicon.ico',
         nav: [
+          { text: '主页', link: 'https://www.talebook.org/' },
           { text: 'Demo', link: 'https://demo.talebook.org' },
         ],
 
@@ -89,6 +90,7 @@ export default defineConfig({
       themeConfig: {
         logo: '/favicon.ico',
         nav: [
+          { text: '主页', link: 'https://www.talebook.org/' },
           { text: 'Demo', link: 'https://demo.talebook.org' },
         ],
 

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 
-const WORDS = ['简洁强大的', '开箱即用的', '美观易用的', '功能丰富的']
+const WORDS = ['简洁强大的', '开箱即用的', '美观易用的', '功能丰富的', '轻松上手的', '全家共享的', '全平台覆盖的', '安全可靠的']
 
 const NAV = [
   { label: '文档', href: 'docs/' },
