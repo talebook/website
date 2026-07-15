@@ -6,9 +6,14 @@ Talebook is a free, open-source project. Its continued development relies on com
 
 Give [Talebook](https://github.com/talebook/talebook) a star on GitHub.
 
-## Afdian Sponsorship
+## Sponsor Developers
 
-Sponsor the developer on [Afdian](https://afdian.com/@talebook) and help keep the project going!
+Support the developers directly to keep Talebook going!
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:16px;">
+  <SponsorCard name="Rex" role="Lead Developer" avatar="/docs/contributors/Rex/round.png" link="https://paypal.me/rexliao" linkText="Sponsor via PayPal" />
+  <SponsorCard name="houheya" role="Contributor" avatar="/docs/contributors/houheya/avatar.jpg" :qrcodes="{ alipay: '/docs/contributors/houheya/alipay.jpg', wechat: '/docs/contributors/houheya/weixin.jpg' }" />
+</div>
 
 ## Become a Contributor
 
