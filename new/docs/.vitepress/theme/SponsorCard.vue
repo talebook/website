@@ -2,7 +2,7 @@
   <div>
     <div
       class="sponsor-card"
-      :class="{ clickable: !qrcodes }"
+      class="sponsor-card clickable"
       @click="handleClick"
     >
       <img :src="avatar" :alt="name" class="avatar" />

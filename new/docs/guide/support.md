@@ -12,7 +12,7 @@
 
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:16px;">
   <SponsorCard name="Rex" role="项目维护者" avatar="/docs/contributors/Rex/round.png" link="https://paypal.me/rexliao" linkText="PayPal 赞助" />
-  <SponsorCard name="He" role="前端开发者" avatar="/docs/contributors/houheya/avatar.jpg" :qrcodes="{ alipay: '/docs/contributors/houheya/alipay.jpg', wechat: '/docs/contributors/houheya/weixin.jpg' }" />
+  <SponsorCard name="houheya" role="前端开发者" avatar="/docs/contributors/houheya/avatar.jpg" :qrcodes="{ alipay: '/docs/contributors/houheya/alipay.jpg', wechat: '/docs/contributors/houheya/weixin.jpg' }" />
 </div>
 
 ## 成为贡献者
