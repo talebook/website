@@ -11,8 +11,8 @@ Give [Talebook](https://github.com/talebook/talebook) a star on GitHub.
 Support the developers directly to keep Talebook going!
 
 <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin-top:16px;">
-  <SponsorCard name="Rex" role="Maintainer" avatar="/docs/contributors/Rex/round.png" link="https://paypal.me/rexliao" linkText="Sponsor via PayPal" />
-  <SponsorCard name="houheya" role="Frontend Developer" avatar="/docs/contributors/houheya/avatar.jpg" :qrcodes="{ alipay: '/docs/contributors/houheya/alipay.jpg', wechat: '/docs/contributors/houheya/weixin.jpg' }" />
+  <SponsorCard name="Rex" role="Lead Developer" avatar="/docs/contributors/Rex/round.png" link="https://paypal.me/rexliao" linkText="Sponsor via PayPal" />
+  <SponsorCard name="houheya" role="Contributor" avatar="/docs/contributors/houheya/avatar.jpg" :qrcodes="{ alipay: '/docs/contributors/houheya/alipay.jpg', wechat: '/docs/contributors/houheya/weixin.jpg' }" />
 </div>
 
 ## Become a Contributor
