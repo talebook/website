@@ -7,7 +7,7 @@
     "dev": "concurrently -n web,docs \"vite --port 5173\" \"npm --prefix docs run dev\"",
     "dev:web": "vite --port 5173",
     "dev:docs": "npm --prefix docs run dev",
-    "build": "vite build",
+    "build": "npx vite build",
     "build:docs": "npm --prefix docs run build",
     "build:all": "npm run build && npm run build:docs",
     "preview": "vite preview",
