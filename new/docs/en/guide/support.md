@@ -6,9 +6,22 @@ Talebook is a free, open-source project. Its continued development relies on com
 
 Give [Talebook](https://github.com/talebook/talebook) a star on GitHub.
 
-## Afdian Sponsorship
+## Sponsor Developers
 
-Sponsor the developer on [Afdian](https://afdian.com/@talebook) and help keep the project going!
+Support the developers directly to keep Talebook going!
+
+### Rex — Maintainer
+
+<a href="https://paypal.me/rexliao" target="_blank" style="display:inline-flex;align-items:center;gap:6px;color:#2196F3;font-weight:500;text-decoration:none;">
+  <svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24"><path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797H8.578c-.524 0-.975.382-1.057.9l-1.252 7.96-.008.058a.653.653 0 0 1-.148.337.615.615 0 0 1-.348.214z"/></svg>
+  Sponsor via PayPal
+</a>
+
+### He — Frontend Developer
+
+| Alipay | WeChat |
+|:---:|:---:|
+| ![Alipay](/贡献者/alipay.png) | ![WeChat](/贡献者/wechat.png) |
 
 ## Become a Contributor
 
