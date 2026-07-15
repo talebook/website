@@ -21,7 +21,7 @@
 
 | 支付宝 | 微信 |
 |:---:|:---:|
-| ![支付宝](/贡献者/alipay.png) | ![微信](/贡献者/wechat.png) |
+| ![支付宝](/contributors/houheya/alipay.jpg) | ![微信](/contributors/houheya/weixin.jpg) |
 
 ## 成为贡献者
 

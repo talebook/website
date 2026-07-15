@@ -21,7 +21,7 @@ Support the developers directly to keep Talebook going!
 
 | Alipay | WeChat |
 |:---:|:---:|
-| ![Alipay](/贡献者/alipay.png) | ![WeChat](/贡献者/wechat.png) |
+| ![Alipay](/contributors/houheya/alipay.jpg) | ![WeChat](/contributors/houheya/weixin.jpg) |
 
 ## Become a Contributor
 
