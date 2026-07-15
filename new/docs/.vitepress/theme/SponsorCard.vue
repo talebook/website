@@ -1,7 +1,6 @@
 <template>
   <div>
     <div
-      class="sponsor-card"
       class="sponsor-card clickable"
       @click="handleClick"
     >
