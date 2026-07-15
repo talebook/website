@@ -10,7 +10,8 @@
     "build": "vite build",
     "build:docs": "npm --prefix docs run build",
     "build:all": "npm run build && npm run build:docs",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "postinstall": "npm --prefix docs install"
   },
   "dependencies": {
     "concurrently": "^9.1.2",
