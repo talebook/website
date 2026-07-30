@@ -3,6 +3,9 @@ import { useEffect, useRef, useState } from 'react'
 const DOCS_URL = '../docs/'
 const GITHUB_URL = 'https://github.com/talebook/talebook'
 const DOCKER_COMMAND = 'docker run -d --name talebook -p 8080:80 -v /localdata:/data talebook/talebook'
+const GITHUB_STATS_API = 'https://api.github.com/repos/talebook/talebook'
+const DOCKER_STATS_API = 'https://img.shields.io/docker/pulls/talebook/talebook.json'
+const STATS_REFRESH_MS = 30 * 60 * 1000
 
 const NAV_ITEMS = [
   { label: '界面', href: '#product' },
@@ -98,11 +101,20 @@ const TECH_ITEMS = [
   ['LICENSE', 'Apache-2.0'],
 ]
 
-function formatNum(number) {
-  if (!number) return '—'
-  if (number >= 1_000_000) return `${Math.round(number / 100_000) / 10}m`
-  if (number >= 1000) return `${Math.round(number / 100) / 10}k`
-  return String(number)
+const PROJECT_STATS = [
+  { id: 'github', value: 5624, suffix: '+', label: 'GitHub Stars' },
+  { id: 'docker', value: 1036805, divisor: 10000, suffix: '万+', label: 'Docker 下载' },
+  { id: 'opensource', value: 100, suffix: '%', label: '开源免费' },
+]
+
+function parseCompactNumber(value) {
+  const match = String(value).trim().match(/^([\d.]+)\s*([kmb])?$/i)
+  if (!match) return null
+
+  const multipliers = { k: 1000, m: 1000000, b: 1000000000 }
+  const multiplier = multipliers[match[2]?.toLowerCase()] || 1
+  const parsed = Math.round(Number(match[1]) * multiplier)
+  return Number.isFinite(parsed) ? parsed : null
 }
 
 function useReducedMotion() {
@@ -117,6 +129,59 @@ function useReducedMotion() {
   }, [])
 
   return reduced
+}
+
+function useProjectStats() {
+  const [stats, setStats] = useState(PROJECT_STATS)
+
+  useEffect(() => {
+    let active = true
+
+    const refresh = async () => {
+      const [githubResult, dockerResult] = await Promise.allSettled([
+        fetch(GITHUB_STATS_API, {
+          headers: { Accept: 'application/vnd.github+json' },
+        }).then((response) => {
+          if (!response.ok) throw new Error(`GitHub stats: ${response.status}`)
+          return response.json()
+        }),
+        // Docker Hub's repository API has no browser CORS header. Shields mirrors
+        // that pull count and exposes a browser-readable JSON response.
+        fetch(DOCKER_STATS_API).then((response) => {
+          if (!response.ok) throw new Error(`Docker stats: ${response.status}`)
+          return response.json()
+        }),
+      ])
+
+      if (!active) return
+
+      setStats((current) => current.map((stat) => {
+        if (stat.id === 'github' && githubResult.status === 'fulfilled') {
+          const value = Number(githubResult.value.stargazers_count)
+          return Number.isFinite(value) ? { ...stat, value } : stat
+        }
+
+        if (stat.id === 'docker' && dockerResult.status === 'fulfilled') {
+          const value = parseCompactNumber(
+            dockerResult.value.value || dockerResult.value.message,
+          )
+          return value && value > stat.value ? { ...stat, value } : stat
+        }
+
+        return stat
+      }))
+    }
+
+    refresh()
+    const intervalId = window.setInterval(refresh, STATS_REFRESH_MS)
+
+    return () => {
+      active = false
+      window.clearInterval(intervalId)
+    }
+  }, [])
+
+  return stats
 }
 
 function LogoMark() {
@@ -537,27 +602,86 @@ function CopyCommand() {
   )
 }
 
-function CommunityStats() {
-  const [stars, setStars] = useState(null)
+function CountUpStat({ value, divisor = 1, suffix, label, delay }) {
+  const statRef = useRef(null)
+  const valueRef = useRef(0)
+  const reducedMotion = useReducedMotion()
+  const [isVisible, setIsVisible] = useState(false)
+  const [displayValue, setDisplayValue] = useState(0)
+  const targetValue = Math.floor(value / divisor)
 
   useEffect(() => {
-    fetch('https://api.github.com/repos/talebook/talebook')
-      .then((response) => response.json())
-      .then((data) => setStars(data.stargazers_count))
-      .catch(() => {})
+    let observer
+
+    if ('IntersectionObserver' in window) {
+      observer = new IntersectionObserver((entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          observer.disconnect()
+          setIsVisible(true)
+        }
+      }, { threshold: 0.35 })
+      observer.observe(statRef.current)
+    } else {
+      setIsVisible(true)
+    }
+
+    return () => observer?.disconnect()
   }, [])
 
+  useEffect(() => {
+    if (!isVisible) return undefined
+
+    if (reducedMotion) {
+      valueRef.current = targetValue
+      setDisplayValue(targetValue)
+      return undefined
+    }
+
+    let frameId
+    let delayId
+    const startValue = valueRef.current
+
+    if (startValue === targetValue) return undefined
+
+    const animate = () => {
+      const startedAt = performance.now()
+      const duration = 1700
+      const tick = (now) => {
+        const progress = Math.min((now - startedAt) / duration, 1)
+        const eased = 1 - Math.pow(1 - progress, 4)
+        const nextValue = Math.round(
+          startValue + (targetValue - startValue) * eased,
+        )
+        valueRef.current = nextValue
+        setDisplayValue(nextValue)
+        if (progress < 1) frameId = requestAnimationFrame(tick)
+      }
+      frameId = requestAnimationFrame(tick)
+    }
+
+    delayId = window.setTimeout(animate, startValue === 0 ? delay : 0)
+
+    return () => {
+      cancelAnimationFrame(frameId)
+      clearTimeout(delayId)
+    }
+  }, [delay, isVisible, reducedMotion, targetValue])
+
+  const number = displayValue.toLocaleString('zh-CN')
+
   return (
-    <div className="community-stats">
-      <div><strong>{formatNum(stars)}</strong><span>GitHub Stars</span></div>
-      <div><strong>1 cmd</strong><span>Docker Deploy</span></div>
-      <div><strong>10+</strong><span>Book Formats</span></div>
+    <div ref={statRef} className="impact-stat" aria-label={`${targetValue.toLocaleString('zh-CN')}${suffix} ${label}`}>
+      <div className="impact-value" aria-hidden="true">
+        <span>{number}</span><b>{suffix}</b>
+      </div>
+      <span className="impact-label">{label}</span>
     </div>
   )
 }
 
 export default function App() {
   const reducedMotion = useReducedMotion()
+  const projectStats = useProjectStats()
 
   useEffect(() => {
     const revealItems = [...document.querySelectorAll('[data-reveal]')]
@@ -618,9 +742,9 @@ export default function App() {
                 OPEN SOURCE · APACHE-2.0
               </Reveal>
               <Reveal as="h1" delay={70}>
-                把你的藏书，<br />
-                点亮成一座<br />
-                <span>数字宇宙。</span>
+                <span className="hero-title-line">把你的藏书，</span>
+                <span className="hero-title-line">点亮成一座</span>
+                <span className="hero-title-line hero-title-gradient">数字宇宙。</span>
               </Reveal>
               <Reveal as="p" className="hero-lead" delay={140}>
                 Talebook 是基于 Calibre 构建的开源个人图书管理系统。
@@ -648,6 +772,18 @@ export default function App() {
             </Reveal>
           </div>
           <div className="hero-scanline" aria-hidden="true" />
+        </section>
+
+        <section className="impact-section" aria-label="项目数据">
+          <div className="section-shell">
+            <Reveal className="impact-panel">
+              <div className="impact-kicker"><span />PROJECT SIGNALS</div>
+              {projectStats.map((stat, index) => (
+                <CountUpStat key={stat.id} {...stat} delay={index * 130} />
+              ))}
+              <div className="impact-orbit" aria-hidden="true"><i /><i /><i /></div>
+            </Reveal>
+          </div>
         </section>
 
         <section id="product" className="product-section section-pad">
@@ -739,7 +875,6 @@ export default function App() {
                 </div>
               </div>
               <div className="community-data">
-                <CommunityStats />
                 <a className="contributors" href={`${GITHUB_URL}/graphs/contributors`} target="_blank" rel="noreferrer">
                   <span>COMMUNITY CONSTELLATION</span>
                   <img src="https://contrib.rocks/image?repo=talebook/talebook" alt="Talebook 项目贡献者" loading="lazy" />
