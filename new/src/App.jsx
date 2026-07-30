@@ -1,306 +1,796 @@
-import { useState, useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
-const WORDS = ['简洁强大的', '开箱即用的', '美观易用的', '功能丰富的', '轻松上手的', '全家共享的', '全平台覆盖的', '安全可靠的']
+const DOCS_URL = '../docs/'
+const GITHUB_URL = 'https://github.com/talebook/talebook'
+const DOCKER_COMMAND = 'docker run -d --name talebook -p 8080:80 -v /localdata:/data talebook/talebook'
 
-const NAV = [
-  { label: '文档', href: 'docs/' },
-  { label: 'Demo', href: 'https://demo.talebook.org' },
+const NAV_ITEMS = [
+  { label: '界面', href: '#product' },
+  { label: '能力', href: '#features' },
+  { label: '部署', href: '#deploy' },
+  { label: '文档', href: DOCS_URL },
+]
+
+const MOBILE_SHOTS = [
+  {
+    src: 'install.png',
+    kicker: 'SETUP / 01',
+    title: '可视化安装',
+    desc: '第一次启动即可完成站点、管理员与私有模式配置。',
+  },
+  {
+    src: 'read.png',
+    kicker: 'READER / 02',
+    title: '沉浸阅读',
+    desc: '在手机上直接阅读 EPUB、PDF 与常见电子书格式。',
+  },
+  {
+    src: 'meta.png',
+    kicker: 'METADATA / 03',
+    title: '智能补全',
+    desc: '从多个内容源匹配封面、作者、出版社与图书简介。',
+  },
+  {
+    src: 'settings.png',
+    kicker: 'CONTROL / 04',
+    title: '细致管理',
+    desc: '用户、登录方式、书库规则与站点能力集中配置。',
+  },
+  {
+    src: 'sendto.png',
+    kicker: 'DELIVERY / 05',
+    title: '推送 Kindle',
+    desc: '管理阅读设备，一键转换格式并把书送到 Kindle。',
+  },
 ]
 
 const FEATURES = [
-  { title: '在线阅读', desc: '内置 candle-reader，支持 EPUB、PDF、MOBI、AZW3 等多种格式，自适应 PC 和手机端。', icon: '📖' },
-  { title: '多用户系统', desc: '支持 QQ、微博、微信、GitHub 社交登录，完善的权限管理，bcrypt 加密存储。', icon: '👥' },
-  { title: '智能元数据', desc: '多源并行搜索（豆瓣、百度百科、新华书店、番茄小说），支持 AI 大模型自动识别。', icon: '🤖' },
-  { title: 'Kindle 推送', desc: '管理多个 Kindle 设备，一键推送书籍，后台自动批量格式转换。', icon: '📧' },
-  { title: 'OPDS 支持', desc: '兼容 KyBooks 等阅读 APP，支持外部 OPDS 书库导入。', icon: '📡' },
-  { title: '一键部署', desc: '一行 Docker 命令即可启动，支持群晖、UNAS 等 NAS 平台，开箱即用。', icon: '🐳' },
-  { title: '桌面客户端', desc: 'Moke 跨平台桌面端，内嵌 readest 阅读器，支持离线下载阅读。', icon: '🖥️' },
-  { title: '网络书库', desc: '导入 Legado 风格书源，在线搜索阅读网络小说。', icon: '🌐' },
+  {
+    icon: 'reader',
+    title: '在线阅读',
+    desc: '内置 candle-reader，自适应桌面与手机，支持 EPUB、PDF、MOBI、AZW3 等格式。',
+    meta: 'MULTI-FORMAT',
+    featured: true,
+  },
+  {
+    icon: 'spark',
+    title: '智能元数据',
+    desc: '多源并行搜索图书信息，并支持 AI 大模型自动识别与补全。',
+    meta: 'AI ENRICHED',
+  },
+  {
+    icon: 'users',
+    title: '多用户与 SSO',
+    desc: '面向家庭或小团队共享，支持社交登录、权限管理与安全密码存储。',
+    meta: 'FAMILY READY',
+  },
+  {
+    icon: 'send',
+    title: 'Kindle 推送',
+    desc: '维护多个设备，后台自动转换格式，把想读的书送到手边。',
+    meta: 'ONE-CLICK',
+  },
+  {
+    icon: 'signal',
+    title: 'OPDS 生态',
+    desc: '兼容 KyBooks 等阅读 App，也可接入外部 OPDS 书库。',
+    meta: 'OPEN PROTOCOL',
+  },
+  {
+    icon: 'server',
+    title: '随处部署',
+    desc: 'Docker 一行启动，适配群晖、UNAS、家庭服务器与常见云主机。',
+    meta: 'SELF-HOSTED',
+  },
+  {
+    icon: 'desktop',
+    title: '跨平台桌面端',
+    desc: 'Moke 桌面客户端内嵌阅读器，支持离线下载与本地阅读。',
+    meta: 'MOKE CLIENT',
+  },
 ]
 
-function formatNum(n) {
-  if (n >= 1000) return Math.round(n / 100) / 10 + 'k'
-  return String(n)
+const TECH_ITEMS = [
+  ['CORE', 'Calibre'],
+  ['DEPLOY', 'Docker'],
+  ['READER', 'Candle Reader'],
+  ['API', 'OPDS'],
+  ['LICENSE', 'Apache-2.0'],
+]
+
+function formatNum(number) {
+  if (!number) return '—'
+  if (number >= 1_000_000) return `${Math.round(number / 100_000) / 10}m`
+  if (number >= 1000) return `${Math.round(number / 100) / 10}k`
+  return String(number)
 }
 
-function CommunityStats() {
-  const [stars, setStars] = useState(null)
-  const [pulls, setPulls] = useState(null)
+function useReducedMotion() {
+  const [reduced, setReduced] = useState(false)
 
   useEffect(() => {
-    fetch('https://api.github.com/repos/talebook/talebook')
-      .then(r => r.json()).then(d => setStars(d.stargazers_count)).catch(() => {})
-    fetch('https://hub.docker.com/v2/repositories/talebook/talebook/')
-      .then(r => r.json()).then(d => setPulls(d.pull_count)).catch(() => {})
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const sync = () => setReduced(media.matches)
+    sync()
+    media.addEventListener?.('change', sync)
+    return () => media.removeEventListener?.('change', sync)
+  }, [])
+
+  return reduced
+}
+
+function LogoMark() {
+  return (
+    <svg className="logo-mark" viewBox="0 0 40 40" aria-hidden="true">
+      <defs>
+        <linearGradient id="logo-gradient" x1="3" y1="4" x2="37" y2="36" gradientUnits="userSpaceOnUse">
+          <stop stopColor="#63E6FF" />
+          <stop offset=".52" stopColor="#8B5CF6" />
+          <stop offset="1" stopColor="#FF4FD8" />
+        </linearGradient>
+      </defs>
+      <circle cx="20" cy="20" r="18" fill="none" stroke="url(#logo-gradient)" strokeWidth="1.5" />
+      <path d="M11 12.5c4.2 0 7.2 1 9 3v14c-1.8-2-4.8-3-9-3v-14Z" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+      <path d="M29 12.5c-4.2 0-7.2 1-9 3v14c1.8-2 4.8-3 9-3v-14Z" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round" />
+      <circle cx="30.5" cy="9.5" r="2" fill="#63E6FF" />
+    </svg>
+  )
+}
+
+function Icon({ name }) {
+  const paths = {
+    reader: (
+      <>
+        <path d="M4 5.5c3.6 0 6.3.9 8 2.8v11.8c-1.7-1.9-4.4-2.8-8-2.8V5.5Z" />
+        <path d="M20 5.5c-3.6 0-6.3.9-8 2.8v11.8c1.7-1.9 4.4-2.8 8-2.8V5.5Z" />
+      </>
+    ),
+    spark: (
+      <>
+        <path d="m12 3 1.1 4.1L17 9l-3.9 1.9L12 15l-1.1-4.1L7 9l3.9-1.9L12 3Z" />
+        <path d="m19 15 .7 2.3L22 18l-2.3.7L19 21l-.7-2.3L16 18l2.3-.7L19 15Z" />
+        <path d="m5 14 .6 1.9 1.9.6-1.9.6L5 19l-.6-1.9-1.9-.6 1.9-.6L5 14Z" />
+      </>
+    ),
+    users: (
+      <>
+        <circle cx="9" cy="8" r="3" />
+        <path d="M3.5 19c.4-3.3 2.2-5 5.5-5s5.1 1.7 5.5 5" />
+        <path d="M15.5 5.5a3 3 0 0 1 0 5.7M16 14c2.7.2 4.2 1.9 4.5 5" />
+      </>
+    ),
+    send: (
+      <>
+        <path d="m21 3-8.2 18-2.1-7.7L3 10.2 21 3Z" />
+        <path d="m10.7 13.3 4.8-4.8" />
+      </>
+    ),
+    signal: (
+      <>
+        <path d="M5.6 18.4a9 9 0 0 1 12.8-12.8" />
+        <path d="M8.4 15.6a5 5 0 0 1 7.2-7.2" />
+        <circle cx="12" cy="12" r="1.5" />
+      </>
+    ),
+    server: (
+      <>
+        <rect x="3" y="4" width="18" height="6" rx="2" />
+        <rect x="3" y="14" width="18" height="6" rx="2" />
+        <path d="M7 7h.01M7 17h.01M11 7h7M11 17h7" />
+      </>
+    ),
+    desktop: (
+      <>
+        <rect x="3" y="4" width="18" height="13" rx="2" />
+        <path d="M8 21h8M12 17v4" />
+      </>
+    ),
+    github: (
+      <path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.4 5.4 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4M9 18c-4.5 2-5-2-7-2" />
+    ),
+    arrow: (
+      <>
+        <path d="M5 12h14" />
+        <path d="m14 7 5 5-5 5" />
+      </>
+    ),
+    copy: (
+      <>
+        <rect x="8" y="8" width="12" height="12" rx="2" />
+        <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" />
+      </>
+    ),
+    check: <path d="m5 12 4 4L19 6" />,
+  }
+
+  return (
+    <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      {paths[name]}
+    </svg>
+  )
+}
+
+function CosmosBackground() {
+  const canvasRef = useRef(null)
+  const reducedMotion = useReducedMotion()
+
+  useEffect(() => {
+    const canvas = canvasRef.current
+    const context = canvas.getContext('2d')
+    let frameId
+    let particles = []
+    const pointer = { x: 0, y: 0 }
+
+    const createParticles = () => {
+      const count = window.innerWidth < 720 ? 34 : 68
+      particles = Array.from({ length: count }, (_, index) => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        radius: 0.5 + Math.random() * 1.25,
+        speed: 0.06 + Math.random() * 0.18,
+        alpha: 0.18 + Math.random() * 0.5,
+        phase: index * 0.37,
+      }))
+    }
+
+    const resize = () => {
+      const ratio = Math.min(window.devicePixelRatio || 1, 1.5)
+      canvas.width = Math.floor(window.innerWidth * ratio)
+      canvas.height = Math.floor(window.innerHeight * ratio)
+      canvas.style.width = `${window.innerWidth}px`
+      canvas.style.height = `${window.innerHeight}px`
+      createParticles()
+    }
+
+    const draw = (time = 0) => {
+      context.clearRect(0, 0, canvas.width, canvas.height)
+      const ratio = Math.min(window.devicePixelRatio || 1, 1.5)
+
+      particles.forEach((particle) => {
+        if (!reducedMotion) {
+          particle.y -= particle.speed * ratio
+          particle.x += pointer.x * particle.speed * 0.08
+          if (particle.y < -4) particle.y = canvas.height + 4
+          if (particle.x < -4) particle.x = canvas.width + 4
+          if (particle.x > canvas.width + 4) particle.x = -4
+        }
+
+        const pulse = reducedMotion ? 1 : 0.72 + Math.sin(time * 0.0008 + particle.phase) * 0.28
+        context.beginPath()
+        context.fillStyle = `rgba(163, 230, 255, ${particle.alpha * pulse})`
+        context.arc(particle.x, particle.y, particle.radius * ratio, 0, Math.PI * 2)
+        context.fill()
+      })
+
+      if (!reducedMotion) frameId = requestAnimationFrame(draw)
+    }
+
+    const onPointerMove = (event) => {
+      pointer.x = event.clientX / window.innerWidth - 0.5
+      pointer.y = event.clientY / window.innerHeight - 0.5
+    }
+
+    resize()
+    draw()
+    window.addEventListener('resize', resize)
+    window.addEventListener('pointermove', onPointerMove, { passive: true })
+
+    return () => {
+      cancelAnimationFrame(frameId)
+      window.removeEventListener('resize', resize)
+      window.removeEventListener('pointermove', onPointerMove)
+    }
+  }, [reducedMotion])
+
+  return <canvas ref={canvasRef} className="cosmos-canvas" aria-hidden="true" />
+}
+
+function ScrollProgress() {
+  const progressRef = useRef(null)
+
+  useEffect(() => {
+    let frame
+    const update = () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight
+      const progress = max > 0 ? window.scrollY / max : 0
+      progressRef.current?.style.setProperty('--progress', progress)
+      frame = null
+    }
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update)
+    }
+    update()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      cancelAnimationFrame(frame)
+      window.removeEventListener('scroll', onScroll)
+    }
+  }, [])
+
+  return <div ref={progressRef} className="scroll-progress" aria-hidden="true" />
+}
+
+function Nav() {
+  const [open, setOpen] = useState(false)
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24)
+    onScroll()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
   return (
-    <div className="grid grid-cols-2 gap-8 max-w-lg mx-auto">
-      <div className="bg-slate-50 rounded-2xl py-8 px-4">
-        <div className="text-3xl md:text-4xl font-bold text-brand-500">{stars ? formatNum(stars) + '+' : '...'}</div>
-        <div className="text-gray-500 text-sm mt-2">GitHub Stars</div>
+    <header className={`site-header ${scrolled ? 'is-scrolled' : ''}`}>
+      <div className="nav-shell">
+        <a className="brand" href="." aria-label="Talebook 首页">
+          <LogoMark />
+          <span className="brand-word">Tale<span>book</span></span>
+          <span className="brand-version">OSS</span>
+        </a>
+
+        <nav className="desktop-nav" aria-label="主导航">
+          {NAV_ITEMS.map((item) => (
+            <a key={item.label} href={item.href}>{item.label}</a>
+          ))}
+        </nav>
+
+        <a className="nav-github" href={GITHUB_URL} target="_blank" rel="noreferrer">
+          <Icon name="github" />
+          <span>GitHub</span>
+        </a>
+
+        <button className="menu-button" type="button" aria-label="切换菜单" aria-expanded={open} onClick={() => setOpen((value) => !value)}>
+          <span />
+          <span />
+        </button>
       </div>
-      <div className="bg-slate-50 rounded-2xl py-8 px-4">
-        <div className="text-3xl md:text-4xl font-bold text-brand-500">{pulls ? formatNum(pulls) + '+' : '...'}</div>
-        <div className="text-gray-500 text-sm mt-2">Docker Pulls</div>
+
+      <div className={`mobile-menu ${open ? 'is-open' : ''}`}>
+        {NAV_ITEMS.map((item) => (
+          <a key={item.label} href={item.href} onClick={() => setOpen(false)}>{item.label}</a>
+        ))}
+        <a href={GITHUB_URL} target="_blank" rel="noreferrer" onClick={() => setOpen(false)}>GitHub</a>
+      </div>
+    </header>
+  )
+}
+
+function BrowserFrame({ src, alt, className = '' }) {
+  return (
+    <div className={`browser-frame ${className}`}>
+      <div className="browser-toolbar">
+        <div className="browser-dots" aria-hidden="true"><i /><i /><i /></div>
+        <div className="browser-address"><span className="status-light" /> library.local</div>
+        <div className="browser-signal" aria-hidden="true"><i /><i /><i /></div>
+      </div>
+      <img src={src} alt={alt} />
+    </div>
+  )
+}
+
+function LibraryCore() {
+  return (
+    <div className="library-core-wrap" data-parallax="0.045">
+      <div className="core-orbit orbit-a" aria-hidden="true" />
+      <div className="core-orbit orbit-b" aria-hidden="true" />
+      <div className="core-aura" aria-hidden="true" />
+      <div className="orbit-chip orbit-chip-a"><span /> EPUB</div>
+      <div className="orbit-chip orbit-chip-b"><span /> OPDS</div>
+      <div className="orbit-chip orbit-chip-c"><span /> AI META</div>
+      <div className="core-label">
+        <span>LIBRARY CORE</span>
+        <b>ONLINE</b>
+      </div>
+      <BrowserFrame src="night.png" alt="Talebook 深色模式书库界面" className="hero-browser" />
+      <div className="core-telemetry">
+        <div><span>INDEX</span><b>Calibre</b></div>
+        <div><span>ACCESS</span><b>Private</b></div>
+        <div><span>SYNC</span><b>Ready</b></div>
       </div>
     </div>
   )
 }
 
-function CyclingTitle() {
-  const [text, setText] = useState('')
-  const wordIdx = useRef(0)
-  const charIdx = useRef(0)
-  const deleting = useRef(false)
-
-  useEffect(() => {
-    let id
-    const tick = () => {
-      if (deleting.current) {
-        charIdx.current--
-        setText(WORDS[wordIdx.current].slice(0, charIdx.current))
-        if (charIdx.current <= 0) {
-          deleting.current = false
-          wordIdx.current = (wordIdx.current + 1) % WORDS.length
-          id = setTimeout(tick, 200)
-          return
-        }
-      } else {
-        charIdx.current++
-        setText(WORDS[wordIdx.current].slice(0, charIdx.current))
-        if (charIdx.current >= WORDS[wordIdx.current].length) {
-          id = setTimeout(() => { deleting.current = true; tick() }, 2000)
-          return
-        }
-      }
-      id = setTimeout(tick, deleting.current ? 60 : 120)
-    }
-    id = setTimeout(tick, 200)
-    return () => clearTimeout(id)
-  }, [])
-
+function Reveal({ as: Tag = 'div', className = '', delay = 0, children, ...props }) {
   return (
-    <span className="block w-full">
-      {text}
-      <span className="animate-pulse">|</span>
-    </span>
+    <Tag className={`reveal ${className}`} data-reveal style={{ '--reveal-delay': `${delay}ms` }} {...props}>
+      {children}
+    </Tag>
   )
 }
 
-function Nav() {
-  const [menuOpen, setMenuOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
+function SectionHeading({ eyebrow, title, body, align = 'left' }) {
+  return (
+    <div className={`section-heading ${align === 'center' ? 'is-centered' : ''}`}>
+      <div className="eyebrow"><span />{eyebrow}</div>
+      <h2>{title}</h2>
+      {body && <p>{body}</p>}
+    </div>
+  )
+}
+
+function ThemeShowcase() {
+  const [theme, setTheme] = useState('night')
+  const current = theme === 'night'
+    ? { src: 'night.png', label: '深色模式', copy: '夜间整理书库，界面依然清晰克制。' }
+    : { src: 'screenshot.png', label: '明亮模式', copy: '大屏浏览、搜索与管理，一眼掌握整个藏书空间。' }
+
+  return (
+    <div className="theme-showcase">
+      <div className="theme-controls" role="group" aria-label="切换界面主题">
+        <button type="button" className={theme === 'night' ? 'is-active' : ''} onClick={() => setTheme('night')}>
+          <span className="theme-dot night" /> 深色模式
+        </button>
+        <button type="button" className={theme === 'light' ? 'is-active' : ''} onClick={() => setTheme('light')}>
+          <span className="theme-dot light" /> 明亮模式
+        </button>
+      </div>
+      <BrowserFrame key={current.src} src={current.src} alt={`Talebook ${current.label}界面`} className="product-browser" />
+      <div className="showcase-caption">
+        <span>UI / RESPONSIVE</span>
+        <p>{current.copy}</p>
+      </div>
+    </div>
+  )
+}
+
+function GlowCard({ className = '', children }) {
+  const onPointerMove = (event) => {
+    const rect = event.currentTarget.getBoundingClientRect()
+    event.currentTarget.style.setProperty('--glow-x', `${event.clientX - rect.left}px`)
+    event.currentTarget.style.setProperty('--glow-y', `${event.clientY - rect.top}px`)
+  }
+
+  return <div className={`glow-card ${className}`} onPointerMove={onPointerMove}>{children}</div>
+}
+
+function MobileShot({ shot, index }) {
+  return (
+    <Reveal className="mobile-shot" delay={index * 70}>
+      <div className="shot-meta">
+        <span>{shot.kicker}</span>
+        <i>{String(index + 1).padStart(2, '0')}</i>
+      </div>
+      <div className="phone-shell">
+        <div className="phone-speaker" />
+        <img src={shot.src} alt={`${shot.title}界面截图`} loading="lazy" />
+      </div>
+      <h3>{shot.title}</h3>
+      <p>{shot.desc}</p>
+    </Reveal>
+  )
+}
+
+function FeatureCard({ feature, index }) {
+  return (
+    <Reveal className={`feature-reveal ${feature.featured ? 'is-featured' : ''}`} delay={(index % 4) * 55}>
+      <GlowCard className={`feature-card ${feature.featured ? 'is-featured' : ''}`}>
+        <div className="feature-topline">
+          <span className="feature-icon"><Icon name={feature.icon} /></span>
+          <span className="feature-meta">{feature.meta}</span>
+        </div>
+        <h3>{feature.title}</h3>
+        <p>{feature.desc}</p>
+        {feature.featured && (
+          <div className="format-stream" aria-label="支持的格式">
+            {['EPUB', 'PDF', 'MOBI', 'AZW3'].map((format) => <span key={format}>{format}</span>)}
+          </div>
+        )}
+      </GlowCard>
+    </Reveal>
+  )
+}
+
+function CopyCommand() {
+  const [copied, setCopied] = useState(false)
+
+  const copy = async () => {
+    let success = false
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(DOCKER_COMMAND)
+        success = true
+      }
+    } catch {
+      success = false
+    }
+
+    if (!success) {
+      const textarea = document.createElement('textarea')
+      textarea.value = DOCKER_COMMAND
+      textarea.setAttribute('readonly', '')
+      textarea.style.position = 'fixed'
+      textarea.style.opacity = '0'
+      document.body.appendChild(textarea)
+      textarea.select()
+      success = document.execCommand('copy')
+      textarea.remove()
+    }
+
+    setCopied(success)
+    window.setTimeout(() => setCopied(false), 1800)
+  }
+
+  return (
+    <div className="terminal">
+      <div className="terminal-bar">
+        <div><i /><i /><i /></div>
+        <span>talebook — deploy</span>
+        <b>bash</b>
+      </div>
+      <div className="terminal-body">
+        <span className="terminal-comment"># 启动你的私人书库</span>
+        <div className="terminal-command">
+          <code><em>$</em> {DOCKER_COMMAND}</code>
+          <button type="button" onClick={copy} aria-label="复制 Docker 命令">
+            <Icon name={copied ? 'check' : 'copy'} />
+            <span>{copied ? '已复制' : '复制'}</span>
+          </button>
+        </div>
+        <div className="terminal-output">
+          <span>✓</span> service talebook started on <b>localhost:8080</b>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+function CommunityStats() {
   const [stars, setStars] = useState(null)
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 10)
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [])
-
-  useEffect(() => {
     fetch('https://api.github.com/repos/talebook/talebook')
-      .then(r => r.json()).then(d => setStars(d.stargazers_count)).catch(() => {})
+      .then((response) => response.json())
+      .then((data) => setStars(data.stargazers_count))
+      .catch(() => {})
   }, [])
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-      scrolled ? 'bg-white/80 backdrop-blur border-b border-gray-100 text-gray-900 shadow-sm' : 'bg-transparent text-gray-900'
-    }`}>
-      <div className="max-w-6xl mx-auto px-6 h-20 flex items-center justify-between">
-        <a href="." className="flex items-center gap-2 text-xl font-bold">
-          <img src="favicon.ico" className="w-8 h-8" alt="" />
-          <span>Talebook</span>
-        </a>
-
-        <div className="hidden md:flex items-center gap-1">
-          {NAV.map((item) => (
-            <a key={item.label} href={item.href} className={`inline-flex items-center px-4 py-2 rounded-lg font-medium transition-colors ${
-              scrolled ? 'text-gray-600 hover:text-gray-900 hover:bg-gray-100' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100/50'
-            }`}>
-              {item.label}
-              <svg className="w-3 h-3 ml-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
-            </a>
-          ))}
-          <a href="https://github.com/talebook/talebook" target="_blank" rel="noopener noreferrer"
-            className="flex items-center gap-2 bg-gray-800 text-white px-5 py-2.5 rounded-full font-semibold hover:bg-gray-700 hover:scale-105 transition-all ml-2">
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
-            GitHub {stars && <span className="text-sm">{formatNum(stars)}</span>}
-          </a>
-        </div>
-
-        <button className={`md:hidden p-2 rounded-lg transition-colors ${
-          scrolled ? 'hover:bg-gray-100' : 'hover:bg-gray-100/50'
-        }`} onClick={() => setMenuOpen(!menuOpen)}>
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            {menuOpen
-              ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />}
-          </svg>
-        </button>
-      </div>
-
-      {menuOpen && (
-        <div className={`md:hidden border-t px-6 py-4 space-y-2 ${scrolled ? 'border-gray-100 bg-white' : 'border-gray-200 bg-white/60'}`}>
-          {NAV.map((item) => (
-            <a key={item.label} href={item.href} className="block px-4 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-100"
-              onClick={() => setMenuOpen(false)}>{item.label}</a>
-          ))}
-          <a href="https://github.com/talebook/talebook" target="_blank" rel="noopener noreferrer"
-            className="block px-4 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-100"
-            onClick={() => setMenuOpen(false)}>GitHub</a>
-        </div>
-      )}
-    </nav>
+    <div className="community-stats">
+      <div><strong>{formatNum(stars)}</strong><span>GitHub Stars</span></div>
+      <div><strong>1 cmd</strong><span>Docker Deploy</span></div>
+      <div><strong>10+</strong><span>Book Formats</span></div>
+    </div>
   )
 }
 
 export default function App() {
+  const reducedMotion = useReducedMotion()
+
+  useEffect(() => {
+    const revealItems = [...document.querySelectorAll('[data-reveal]')]
+    if (reducedMotion || !('IntersectionObserver' in window)) {
+      revealItems.forEach((item) => item.classList.add('is-visible'))
+      return undefined
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible')
+          observer.unobserve(entry.target)
+        }
+      })
+    }, { threshold: 0.12, rootMargin: '0px 0px -7% 0px' })
+
+    revealItems.forEach((item) => observer.observe(item))
+    return () => observer.disconnect()
+  }, [reducedMotion])
+
+  useEffect(() => {
+    if (reducedMotion) return undefined
+    const targets = [...document.querySelectorAll('[data-parallax]')]
+    let frame
+    const update = () => {
+      targets.forEach((target) => {
+        const rect = target.getBoundingClientRect()
+        const speed = Number(target.dataset.parallax || 0.04)
+        const offset = (window.innerHeight * 0.5 - (rect.top + rect.height * 0.5)) * speed
+        target.style.setProperty('--parallax-y', `${offset.toFixed(1)}px`)
+      })
+      frame = null
+    }
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update)
+    }
+    update()
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => {
+      cancelAnimationFrame(frame)
+      window.removeEventListener('scroll', onScroll)
+    }
+  }, [reducedMotion])
+
   return (
-    <div className="min-h-screen">
+    <div className="site">
+      <CosmosBackground />
+      <ScrollProgress />
       <Nav />
 
-      {/* Hero */}
-      <section className="relative pt-24 pb-16 lg:pt-36 lg:pb-24 overflow-hidden bg-white">
-        <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none">
-          <div className="absolute -top-[10%] -left-[10%] w-[70vw] h-[70vw] rounded-full bg-brand-200 blur-[80px] opacity-30 mix-blend-multiply" />
-          <div className="absolute -bottom-[10%] -right-[10%] w-[70vw] h-[70vw] rounded-full bg-cyan-200 blur-[80px] opacity-30 mix-blend-multiply" />
-        </div>
-
-        <div className="max-w-4xl mx-auto px-6 text-center relative">
-          <div className="inline-block py-1 px-3 rounded-full bg-brand-100 text-brand-600 font-semibold text-sm mb-8 border border-brand-200">
-            Open Source Book Management System
-          </div>
-
-          <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mb-4">
-            <div className="h-[1.2em] relative mb-1">
-              <CyclingTitle />
+      <main>
+        <section className="hero">
+          <div className="hero-grid section-shell">
+            <div className="hero-copy">
+              <Reveal className="status-pill">
+                <span className="pulse-dot" />
+                OPEN SOURCE · APACHE-2.0
+              </Reveal>
+              <Reveal as="h1" delay={70}>
+                把你的藏书，<br />
+                点亮成一座<br />
+                <span>数字宇宙。</span>
+              </Reveal>
+              <Reveal as="p" className="hero-lead" delay={140}>
+                Talebook 是基于 Calibre 构建的开源个人图书管理系统。
+                在自己的服务器上管理、阅读、检索和分享每一本书，数据始终由你掌控。
+              </Reveal>
+              <Reveal className="hero-actions" delay={210}>
+                <a className="button button-primary" href={DOCS_URL}>
+                  开始部署 <Icon name="arrow" />
+                </a>
+                <a className="button button-secondary" href={GITHUB_URL} target="_blank" rel="noreferrer">
+                  <Icon name="github" /> 查看源码
+                </a>
+              </Reveal>
+              <Reveal className="hero-proof" delay={280}>
+                <span>CALIBRE CORE</span>
+                <i />
+                <span>DOCKER READY</span>
+                <i />
+                <span>YOUR DATA</span>
+              </Reveal>
             </div>
-            <span className="text-brand-600">个人图书管理系统</span>
-          </h1>
 
-          <p className="text-lg md:text-xl text-gray-500 max-w-2xl mx-auto mb-10">
-            Talebook 是一个基于 Calibre 构建的开源个人图书管理系统。
-            支持在线阅读、多用户管理、Kindle 推送和 AI 智能元数据识别，
-            一行 Docker 命令即可在你的 NAS 或服务器上运行。
-          </p>
-
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <a href="docs/"
-              className="inline-flex items-center justify-center px-8 py-3.5 rounded-full bg-brand-500 text-white font-semibold hover:bg-brand-600 hover:scale-105 transition-all">
-              立即开始
-              <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
-            </a>
-            <a href="https://github.com/talebook/talebook" target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center justify-center px-8 py-3.5 rounded-full bg-white text-gray-700 font-semibold hover:scale-105 transition-all shadow-sm border border-gray-200">
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></svg>
-              查看 GitHub
-            </a>
+            <Reveal className="hero-visual" delay={100}>
+              <LibraryCore />
+            </Reveal>
           </div>
+          <div className="hero-scanline" aria-hidden="true" />
+        </section>
 
-          <div className="mt-16">
-            <img src="screenshot.png" alt="Talebook 界面预览"
-              className="rounded-xl shadow-2xl border border-gray-200 mx-auto" />
+        <section id="product" className="product-section section-pad">
+          <div className="section-shell">
+            <Reveal>
+              <SectionHeading
+                eyebrow="PRODUCT INTERFACE"
+                title={<>一座书库，<span>两种光线。</span></>}
+                body="从大屏管理到手机阅读，Talebook 在不同设备、不同光线下都保持清晰、顺手。"
+              />
+            </Reveal>
+            <Reveal className="product-stage" delay={100}>
+              <ThemeShowcase />
+            </Reveal>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Features */}
-      <section className="py-24 bg-white overflow-hidden">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="inline-block py-1 px-3 rounded-full bg-brand-100 text-brand-600 font-semibold text-sm mb-6">
-            Features
+        <section className="screens-section section-pad">
+          <div className="section-shell">
+            <Reveal>
+              <SectionHeading
+                eyebrow="WORKFLOW IN YOUR POCKET"
+                title={<>从安装到阅读，<span>每一步都有界面。</span></>}
+                body="旧站展示过的核心能力被重新组织成一条完整产品轨道：配置、阅读、元数据、管理与推送。"
+              />
+            </Reveal>
+            <div className="mobile-shots">
+              {MOBILE_SHOTS.map((shot, index) => <MobileShot key={shot.title} shot={shot} index={index} />)}
+            </div>
           </div>
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">强大的功能特性</h2>
-          <p className="text-gray-500 text-lg mb-12 max-w-xl">
-            Talebook 提供全方位的图书管理能力，满足从个人收藏到家庭共享的多样化需求。
-          </p>
+        </section>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {FEATURES.map((f) => (
-              <div key={f.title} className="rounded-xl p-6 border border-gray-100 hover:border-brand-200 hover:shadow-md transition-all">
-                <div className="text-3xl mb-3">{f.icon}</div>
-                <h3 className="font-semibold text-lg mb-2">{f.title}</h3>
-                <p className="text-gray-500 text-sm leading-relaxed">{f.desc}</p>
+        <section id="features" className="features-section section-pad">
+          <div className="section-shell">
+            <Reveal>
+              <SectionHeading
+                eyebrow="CAPABILITY MATRIX"
+                title={<>不是一个书架，<span>是一套完整的阅读系统。</span></>}
+                body="收藏、整理、阅读、同步与分享集中在一个可以完全自托管的空间里。"
+              />
+            </Reveal>
+            <div className="features-grid">
+              {FEATURES.map((feature, index) => <FeatureCard key={feature.title} feature={feature} index={index} />)}
+            </div>
+          </div>
+        </section>
+
+        <section id="deploy" className="deploy-section section-pad">
+          <div className="section-shell deploy-grid">
+            <Reveal className="deploy-copy">
+              <SectionHeading
+                eyebrow="DEPLOYMENT SIGNAL"
+                title={<>一条命令，<span>书库上线。</span></>}
+                body="无需把私人藏书交给第三方。把 Talebook 部署在 NAS、家庭服务器或云主机，随时迁移，长期拥有。"
+              />
+              <div className="tech-stack">
+                {TECH_ITEMS.map(([label, value]) => (
+                  <div key={label}><span>{label}</span><b>{value}</b></div>
+                ))}
               </div>
-            ))}
+              <a className="text-link" href={DOCS_URL}>阅读安装文档 <Icon name="arrow" /></a>
+            </Reveal>
+            <Reveal className="deploy-terminal" delay={120}>
+              <CopyCommand />
+              <div className="deploy-radar" aria-hidden="true">
+                <span />
+                <span />
+                <span />
+                <i />
+              </div>
+            </Reveal>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Contributors */}
-      <section className="py-24 bg-white">
-        <div className="max-w-7xl mx-auto px-6 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">加入开源社区</h2>
-          <p className="text-gray-500 text-lg mb-10 max-w-xl mx-auto">
-            Talebook 由全球开发者共同维护，欢迎提交 Issue 或 PR，一起把项目做得更好。
-          </p>
-          <a href="https://github.com/talebook/talebook/graphs/contributors" target="_blank" rel="noopener noreferrer">
-            <img src="https://contrib.rocks/image?repo=talebook/talebook" alt="贡献者" className="mx-auto" />
-          </a>
-          <div className="mt-12">
-            <CommunityStats />
+        <section className="community-section section-pad">
+          <div className="section-shell">
+            <Reveal className="community-panel">
+              <div className="community-copy">
+                <div className="eyebrow"><span />OPEN SOURCE NETWORK</div>
+                <h2>一群爱书的人，<br /><span>共同维护这座书库。</span></h2>
+                <p>提交 Issue、改进代码、完善文档，或只是点亮一颗 Star。每一种参与都会让 Talebook 走得更远。</p>
+                <div className="community-actions">
+                  <a className="button button-primary" href={GITHUB_URL} target="_blank" rel="noreferrer">
+                    <Icon name="github" /> 加入 GitHub 社区
+                  </a>
+                  <a className="text-link" href="https://demo.talebook.org" target="_blank" rel="noreferrer">
+                    查看在线 Demo <Icon name="arrow" />
+                  </a>
+                </div>
+              </div>
+              <div className="community-data">
+                <CommunityStats />
+                <a className="contributors" href={`${GITHUB_URL}/graphs/contributors`} target="_blank" rel="noreferrer">
+                  <span>COMMUNITY CONSTELLATION</span>
+                  <img src="https://contrib.rocks/image?repo=talebook/talebook" alt="Talebook 项目贡献者" loading="lazy" />
+                </a>
+              </div>
+            </Reveal>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* CTA */}
-      <section className="py-24 relative overflow-hidden bg-slate-50">
-        <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none bg-white">
-          <div className="absolute -top-[10%] -left-[10%] w-[60vw] h-[60vw] rounded-full bg-brand-100 blur-[100px] opacity-60 mix-blend-multiply" />
-          <div className="absolute -bottom-[10%] -right-[10%] w-[60vw] h-[60vw] rounded-full bg-cyan-200 blur-[120px] opacity-50 mix-blend-multiply" />
-          <div className="absolute top-[30%] left-[30%] hidden md:block w-[50vw] h-[50vw] rounded-full bg-brand-50 blur-[90px] opacity-60 mix-blend-multiply" />
-          <div className="absolute top-[10%] right-[10%] hidden lg:block w-[40vw] h-[40vw] rounded-full bg-brand-200 blur-[110px] opacity-40 mix-blend-multiply" />
-        </div>
-        <div className="max-w-4xl mx-auto px-6 text-center relative z-10 w-full min-h-[50vh] flex flex-col justify-center items-center">
-          <h2 className="text-5xl md:text-6xl lg:text-8xl font-bold text-gray-900 mb-16 tracking-tight leading-tight">
-            即刻部署你的<br /><span className="text-brand-500">私人图书馆</span>
-          </h2>
-          <a href="docs/"
-            className="group relative inline-flex items-center gap-3 bg-brand-500 text-white px-12 py-6 rounded-full font-bold text-xl hover:bg-brand-600 hover:scale-105 transition-all shadow-xl shadow-brand-500/20 overflow-hidden">
-            <span className="relative z-10">立即开始</span>
-            <svg className="w-6 h-6 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-            </svg>
-          </a>
-        </div>
-      </section>
+        <section className="final-cta">
+          <div className="cta-orbit" aria-hidden="true" />
+          <Reveal className="section-shell final-cta-inner">
+            <div className="eyebrow"><span />YOUR LIBRARY / YOUR RULES</div>
+            <h2>下一页，从自己的书库开始。</h2>
+            <p>让沉睡在硬盘里的藏书，重新成为每天都能打开的知识空间。</p>
+            <div className="hero-actions">
+              <a className="button button-primary" href={DOCS_URL}>立即开始 <Icon name="arrow" /></a>
+              <a className="button button-secondary" href="https://hub.docker.com/r/talebook/talebook" target="_blank" rel="noreferrer">Docker Hub</a>
+            </div>
+          </Reveal>
+        </section>
+      </main>
 
-      {/* Footer */}
-      <footer className="bg-white text-[#1e293b] py-20 border-t border-slate-100">
-        <div className="max-w-6xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8">
-          <div>
-            <h4 className="font-semibold mb-3">资源</h4>
-            <div className="space-y-2 text-sm text-gray-500">
-              <a href="docs/" className="block hover:text-gray-900">文档</a>
-              <a href="https://demo.talebook.org" className="block hover:text-gray-900">Demo</a>
-            </div>
+      <footer className="footer">
+        <div className="section-shell footer-grid">
+          <div className="footer-brand">
+            <a className="brand" href="."><LogoMark /><span className="brand-word">Tale<span>book</span></span></a>
+            <p>开源、可自托管的个人图书管理系统。</p>
           </div>
           <div>
-            <h4 className="font-semibold mb-3">社区</h4>
-            <div className="space-y-2 text-sm text-gray-500">
-              <a href="https://github.com/talebook/talebook" className="block hover:text-gray-900">GitHub</a>
-            </div>
+            <span className="footer-label">PRODUCT</span>
+            <a href="#product">界面</a>
+            <a href="#features">功能</a>
+            <a href="https://demo.talebook.org">Demo</a>
           </div>
           <div>
-            <h4 className="font-semibold mb-3">支持</h4>
-            <div className="space-y-2 text-sm text-gray-500">
-              <a href="https://github.com/talebook/talebook/issues" className="block hover:text-gray-900">反馈问题</a>
-            </div>
+            <span className="footer-label">BUILD</span>
+            <a href={DOCS_URL}>文档</a>
+            <a href="https://hub.docker.com/r/talebook/talebook">Docker</a>
+            <a href="https://github.com/talebook/moke">Moke 桌面端</a>
           </div>
           <div>
-            <h4 className="font-semibold mb-3">友情链接</h4>
-            <div className="space-y-2 text-sm text-gray-500">
-              <a href="https://calibre-ebook.com/" className="block hover:text-gray-900">Calibre</a>
-              <a href="https://github.com/talebook/moke" className="block hover:text-gray-900">Moke 桌面端</a>
-            </div>
+            <span className="footer-label">COMMUNITY</span>
+            <a href={GITHUB_URL}>GitHub</a>
+            <a href={`${GITHUB_URL}/issues`}>反馈问题</a>
+            <a href="https://afdian.net/@talebook">支持项目</a>
           </div>
         </div>
-        <div className="max-w-6xl mx-auto px-6 mt-12 pt-6 border-t border-slate-100 text-center text-sm text-gray-400">
-          &copy; {new Date().getFullYear()} Talebook. Built with Calibre + Vue. Apache-2.0 License.
+        <div className="section-shell footer-bottom">
+          <span>© 2016–{new Date().getFullYear()} Talebook</span>
+          <span>Built with Calibre · Apache-2.0</span>
         </div>
       </footer>
     </div>
