@@ -16,10 +16,10 @@ const NAV_ITEMS = [
 
 const MOBILE_SHOTS = [
   {
-    src: 'install.png',
-    kicker: 'SETUP / 01',
-    title: '可视化安装',
-    desc: '第一次启动即可完成站点、管理员与私有模式配置。',
+    src: 'mobile-library.png',
+    kicker: 'LIBRARY / 01',
+    title: '响应式书库',
+    desc: '封面书墙自动适配手机，随时翻看自己的完整收藏。',
   },
   {
     src: 'read.png',
@@ -28,22 +28,39 @@ const MOBILE_SHOTS = [
     desc: '在手机上直接阅读 EPUB、PDF 与常见电子书格式。',
   },
   {
-    src: 'meta.png',
-    kicker: 'METADATA / 03',
-    title: '智能补全',
-    desc: '从多个内容源匹配封面、作者、出版社与图书简介。',
+    src: 'mobile-themes.png',
+    kicker: 'THEMES / 03',
+    title: '六套主题',
+    desc: '默认、黄铜、石墨、浅灰、暖红与极简，明暗皆可切换。',
   },
   {
     src: 'settings.png',
     kicker: 'CONTROL / 04',
-    title: '细致管理',
-    desc: '用户、登录方式、书库规则与站点能力集中配置。',
+    title: '丰富设置',
+    desc: '站点、用户、服务与系统配置，手机上也能清晰管理。',
   },
   {
-    src: 'sendto.png',
-    kicker: 'DELIVERY / 05',
-    title: '推送 Kindle',
-    desc: '管理阅读设备，一键转换格式并把书送到 Kindle。',
+    src: 'meta.png',
+    kicker: 'METADATA / 05',
+    title: '智能补全',
+    desc: '从多个内容源匹配封面、作者、出版社与图书简介。',
+  },
+]
+
+const CONTROL_SHOWCASES = [
+  {
+    src: 'themes.png',
+    kicker: 'THEME LAB / 01',
+    title: '六套主题，明暗两色',
+    desc: '从纸页般温暖的暖红，到冷静克制的石墨与极简；主题即时生效，整套界面一起改变。',
+    tags: ['默认', '黄铜', '石墨', '浅灰', '暖红', '极简'],
+  },
+  {
+    src: 'settings-wide.png',
+    kicker: 'CONTROL CENTER / 02',
+    title: '设置丰富，但秩序清楚',
+    desc: '用四个配置域收纳站点、权限、集成与系统能力，不必在散落的配置文件之间来回寻找。',
+    tags: ['站点', '访问与用户', '服务与集成', '系统'],
   },
 ]
 
@@ -90,6 +107,12 @@ const FEATURES = [
     title: '跨平台桌面端',
     desc: 'Moke 桌面客户端内嵌阅读器，支持离线下载与本地阅读。',
     meta: 'MOKE CLIENT',
+  },
+  {
+    icon: 'palette',
+    title: '主题与控制中心',
+    desc: '六套主题与明暗模式即时切换；邮件、元数据、OPDS、WebDAV、数据库、SSL 与更新检查集中配置。',
+    meta: '6 THEMES / 4 DOMAINS',
   },
 ]
 
@@ -248,6 +271,15 @@ function Icon({ name }) {
       <>
         <rect x="3" y="4" width="18" height="13" rx="2" />
         <path d="M8 21h8M12 17v4" />
+      </>
+    ),
+    palette: (
+      <>
+        <path d="M12 3a9 9 0 1 0 0 18h1.4a2 2 0 0 0 1.5-3.3 2 2 0 0 1 1.5-3.3H18A3 3 0 0 0 21 11c-.5-4.5-4.1-8-9-8Z" />
+        <circle cx="7.5" cy="11" r=".8" fill="currentColor" stroke="none" />
+        <circle cx="9.5" cy="7" r=".8" fill="currentColor" stroke="none" />
+        <circle cx="14" cy="6.5" r=".8" fill="currentColor" stroke="none" />
+        <circle cx="17" cy="9.5" r=".8" fill="currentColor" stroke="none" />
       </>
     ),
     github: (
@@ -448,7 +480,7 @@ function LibraryCore() {
         <span>LIBRARY CORE</span>
         <b>ONLINE</b>
       </div>
-      <BrowserFrame src="night.png" alt="Talebook 深色模式书库界面" className="hero-browser" />
+      <BrowserFrame src="home.png" alt="Talebook 深色模式首页" className="hero-browser" />
       <div className="core-telemetry">
         <div><span>INDEX</span><b>Calibre</b></div>
         <div><span>ACCESS</span><b>Private</b></div>
@@ -479,17 +511,17 @@ function SectionHeading({ eyebrow, title, body, align = 'left' }) {
 function ThemeShowcase() {
   const [theme, setTheme] = useState('night')
   const current = theme === 'night'
-    ? { src: 'night.png', label: '深色模式', copy: '夜间整理书库，界面依然清晰克制。' }
-    : { src: 'screenshot.png', label: '明亮模式', copy: '大屏浏览、搜索与管理，一眼掌握整个藏书空间。' }
+    ? { src: 'night.png', label: '暖红 · 深色', copy: '同一座书库，在夜间保持克制的对比度与清晰层级。' }
+    : { src: 'screenshot.png', label: '暖红 · 明亮', copy: '出版社、作者、标签、格式与连载状态都能快速筛选。' }
 
   return (
     <div className="theme-showcase">
       <div className="theme-controls" role="group" aria-label="切换界面主题">
         <button type="button" className={theme === 'night' ? 'is-active' : ''} onClick={() => setTheme('night')}>
-          <span className="theme-dot night" /> 深色模式
+          <span className="theme-dot night" /> 暖红 · 深色
         </button>
         <button type="button" className={theme === 'light' ? 'is-active' : ''} onClick={() => setTheme('light')}>
-          <span className="theme-dot light" /> 明亮模式
+          <span className="theme-dot light" /> 暖红 · 明亮
         </button>
       </div>
       <BrowserFrame key={current.src} src={current.src} alt={`Talebook ${current.label}界面`} className="product-browser" />
@@ -498,6 +530,25 @@ function ThemeShowcase() {
         <p>{current.copy}</p>
       </div>
     </div>
+  )
+}
+
+function ControlShowcase({ item, index }) {
+  return (
+    <Reveal className="control-showcase-card" delay={index * 90}>
+      <div className="control-card-signal">
+        <span>{item.kicker}</span>
+        <i>LIVE CAPTURE / 3000</i>
+      </div>
+      <BrowserFrame src={item.src} alt={`${item.title}界面截图`} className="control-browser" />
+      <div className="control-card-copy">
+        <h3>{item.title}</h3>
+        <p>{item.desc}</p>
+      </div>
+      <div className="control-card-tags">
+        {item.tags.map((tag) => <span key={tag}>{tag}</span>)}
+      </div>
+    </Reveal>
   )
 }
 
@@ -786,36 +837,6 @@ export default function App() {
           </div>
         </section>
 
-        <section id="product" className="product-section section-pad">
-          <div className="section-shell">
-            <Reveal>
-              <SectionHeading
-                eyebrow="PRODUCT INTERFACE"
-                title={<>一座书库，<span>两种光线。</span></>}
-                body="从大屏管理到手机阅读，Talebook 在不同设备、不同光线下都保持清晰、顺手。"
-              />
-            </Reveal>
-            <Reveal className="product-stage" delay={100}>
-              <ThemeShowcase />
-            </Reveal>
-          </div>
-        </section>
-
-        <section className="screens-section section-pad">
-          <div className="section-shell">
-            <Reveal>
-              <SectionHeading
-                eyebrow="WORKFLOW IN YOUR POCKET"
-                title={<>从安装到阅读，<span>每一步都有界面。</span></>}
-                body="旧站展示过的核心能力被重新组织成一条完整产品轨道：配置、阅读、元数据、管理与推送。"
-              />
-            </Reveal>
-            <div className="mobile-shots">
-              {MOBILE_SHOTS.map((shot, index) => <MobileShot key={shot.title} shot={shot} index={index} />)}
-            </div>
-          </div>
-        </section>
-
         <section id="features" className="features-section section-pad">
           <div className="section-shell">
             <Reveal>
@@ -827,6 +848,53 @@ export default function App() {
             </Reveal>
             <div className="features-grid">
               {FEATURES.map((feature, index) => <FeatureCard key={feature.title} feature={feature} index={index} />)}
+            </div>
+          </div>
+        </section>
+
+        <section id="product" className="product-section section-pad">
+          <div className="section-shell">
+            <Reveal>
+              <SectionHeading
+                eyebrow="PRODUCT INTERFACE"
+                title={<>同一座书库，<span>昼夜都清楚。</span></>}
+                body="新版暖红主题的真实书库界面：完整筛选、卡片书目与响应式布局，在明暗模式间即时切换。"
+              />
+            </Reveal>
+            <Reveal className="product-stage" delay={100}>
+              <ThemeShowcase />
+            </Reveal>
+          </div>
+        </section>
+
+        <section className="control-section section-pad">
+          <div className="section-shell">
+            <Reveal>
+              <SectionHeading
+                eyebrow="THEME LAB / CONTROL CENTER"
+                title={<>主题有选择，<span>设置有秩序。</span></>}
+                body="不只是换一个背景色。Talebook 把整套视觉风格与复杂系统能力，都做成了看得见、摸得着的界面。"
+              />
+            </Reveal>
+            <div className="control-showcase-grid">
+              {CONTROL_SHOWCASES.map((item, index) => (
+                <ControlShowcase key={item.title} item={item} index={index} />
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="screens-section section-pad">
+          <div className="section-shell">
+            <Reveal>
+              <SectionHeading
+                eyebrow="WORKFLOW IN YOUR POCKET"
+                title={<>从书库到后台，<span>手机也能掌控。</span></>}
+                body="真实手机界面覆盖书库、阅读、主题、系统设置与元数据，让管理和阅读不再依赖一块大屏幕。"
+              />
+            </Reveal>
+            <div className="mobile-shots">
+              {MOBILE_SHOTS.map((shot, index) => <MobileShot key={shot.title} shot={shot} index={index} />)}
             </div>
           </div>
         </section>

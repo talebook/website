@@ -995,6 +995,7 @@ img {
   width: 100%;
   aspect-ratio: 2.1 / 1;
   object-fit: cover;
+  object-position: top;
   animation: image-enter 420ms ease both;
 }
 
@@ -1020,6 +1021,123 @@ img {
   margin: 0;
   color: #8e9cb4;
   font-size: 13px;
+}
+
+.control-section {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 15% 55%, rgba(255, 79, 216, 0.055), transparent 30%),
+    radial-gradient(circle at 88% 35%, rgba(99, 230, 255, 0.05), transparent 32%);
+}
+
+.control-section::before {
+  content: "";
+  position: absolute;
+  top: 270px;
+  right: -18%;
+  left: -18%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(99, 230, 255, 0.1), rgba(139, 92, 246, 0.1), transparent);
+  transform: rotate(-5deg);
+}
+
+.control-showcase-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.control-showcase-card {
+  position: relative;
+  min-width: 0;
+  padding: 18px;
+  overflow: hidden;
+  border: 1px solid rgba(136, 182, 220, 0.14);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at 90% 0%, rgba(139, 92, 246, 0.09), transparent 33%),
+    linear-gradient(145deg, rgba(15, 24, 44, 0.84), rgba(7, 11, 21, 0.8));
+  box-shadow: 0 38px 80px rgba(0, 0, 0, 0.25);
+  transition: border-color 220ms ease, box-shadow 220ms ease;
+}
+
+.control-showcase-card:hover {
+  border-color: rgba(99, 230, 255, 0.27);
+  box-shadow: 0 42px 90px rgba(0, 0, 0, 0.32), 0 0 36px rgba(99, 230, 255, 0.04);
+}
+
+.control-card-signal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 2px 4px 14px;
+  color: #65748e;
+  font: 600 8px/1 "JetBrains Mono", monospace;
+  letter-spacing: 0.12em;
+}
+
+.control-card-signal > span {
+  color: #83bdd2;
+}
+
+.control-card-signal i {
+  color: #3f4c63;
+  font-style: normal;
+}
+
+.control-browser {
+  border-radius: 12px;
+  box-shadow: 0 26px 58px rgba(0, 0, 0, 0.38);
+}
+
+.control-browser img {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  object-position: top;
+}
+
+.control-card-copy {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.7fr) minmax(0, 1.3fr);
+  align-items: start;
+  gap: 24px;
+  padding: 24px 4px 18px;
+}
+
+.control-card-copy h3 {
+  margin: 0;
+  color: var(--ice);
+  font-family: "Space Grotesk", "PingFang SC", sans-serif;
+  font-size: 22px;
+  font-weight: 590;
+  letter-spacing: -0.035em;
+}
+
+.control-card-copy p {
+  margin: 0;
+  color: #7d8ca5;
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+.control-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  padding: 0 4px 4px;
+}
+
+.control-card-tags span {
+  padding: 6px 9px;
+  color: #72839e;
+  border: 1px solid rgba(137, 181, 220, 0.13);
+  border-radius: 5px;
+  background: rgba(6, 10, 20, 0.48);
+  font: 600 8px/1 "JetBrains Mono", monospace;
+  letter-spacing: 0.06em;
 }
 
 .screens-section {
@@ -1736,6 +1854,14 @@ img {
     gap: 58px;
   }
 
+  .control-card-copy {
+    display: block;
+  }
+
+  .control-card-copy p {
+    margin-top: 10px;
+  }
+
   .deploy-copy {
     max-width: 720px;
   }
@@ -1982,6 +2108,39 @@ img {
   .showcase-caption p {
     margin-top: 7px;
     font-size: 11px;
+  }
+
+  .control-showcase-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .control-showcase-card {
+    padding: 12px;
+    border-radius: 14px;
+  }
+
+  .control-card-signal {
+    padding: 3px 2px 12px;
+  }
+
+  .control-card-signal i {
+    display: none;
+  }
+
+  .control-browser {
+    border-radius: 9px;
+  }
+
+  .control-card-copy {
+    padding: 20px 3px 15px;
+  }
+
+  .control-card-copy h3 {
+    font-size: 20px;
+  }
+
+  .control-card-tags {
+    padding-inline: 3px;
   }
 
   .mobile-shots {
