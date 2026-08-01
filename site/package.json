@@ -7,9 +7,10 @@
     "dev": "concurrently -n web,docs \"vite --port 5173\" \"npm --prefix docs run dev\"",
     "dev:web": "vite --port 5173",
     "dev:docs": "npm --prefix docs run dev",
-    "build": "npx vite build",
+    "build": "vite build",
     "build:docs": "npm --prefix docs run build",
-    "build:all": "npm run build && npm run build:docs",
+    "build:legacy": "node scripts/copy-legacy.mjs",
+    "build:all": "npm run build && npm run build:docs && npm run build:legacy",
     "preview": "vite preview",
     "postinstall": "npm --prefix docs install"
   },
