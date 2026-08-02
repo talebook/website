@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 
-const DOCS_URL = '../docs/'
+const DOCS_URL = '/docs/'
 const GITHUB_URL = 'https://github.com/talebook/talebook'
 const DOCKER_COMMAND = 'docker run -d --name talebook -p 8080:80 -v /localdata:/data talebook/talebook'
 const GITHUB_STATS_API = 'https://api.github.com/repos/talebook/talebook'
